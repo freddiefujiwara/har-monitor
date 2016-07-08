@@ -1,0 +1,147 @@
+var server = require('webserver').create(),
+    system = require('system'),
+    fs     = require('fs'),
+    page   = require('webpage').create(),
+    port   = system.env.PORT || 8080;
+
+var service = server.listen(port, function(request, response) {
+
+    var url = 'http://review.rakuten.co.jp/item/1/247678_10001448/1.1/';
+
+    request_page(url, function(har){
+        response.statusCode = 200;
+        response.write(JSON.stringify(har, undefined, 4));
+        response.close();
+    });
+});
+
+if(service) console.log("server started - http://localhost:" + server.port);
+
+function request_page(url, callback){
+    page.address = url;
+    page.resources = [];
+
+    page.onLoadStarted = function () {
+        page.startTime = new Date();
+    };
+
+    page.onResourceRequested = function (req) {
+        page.resources[req.id] = {
+            request: req,
+            startReply: null,
+            endReply: null
+        };
+    };
+
+    page.onResourceReceived = function (res) {
+        if (res.stage === 'start') {
+            page.resources[res.id].startReply = res;
+        }
+        if (res.stage === 'end') {
+            page.resources[res.id].endReply = res;
+        }
+    };
+
+    page.open(page.address, function (status) {
+        var har;
+        if (status !== 'success') {
+            console.log('FAIL to load the address');
+            phantom.exit(1);
+        } else {
+            page.endTime = new Date();
+            page.title = page.evaluate(function () {
+                return document.title;
+            });
+            callback(createHAR(page.address, page.title, page.startTime, page.resources));
+            phantom.exit();
+        }
+    });
+}
+if (!Date.prototype.toISOString) {
+    Date.prototype.toISOString = function () {
+        function pad(n) { return n < 10 ? '0' + n : n; }
+        function ms(n) { return n < 10 ? '00'+ n : n < 100 ? '0' + n : n }
+        return this.getFullYear() + '-' +
+            pad(this.getMonth() + 1) + '-' +
+            pad(this.getDate()) + 'T' +
+            pad(this.getHours()) + ':' +
+            pad(this.getMinutes()) + ':' +
+            pad(this.getSeconds()) + '.' +
+            ms(this.getMilliseconds()) + 'Z';
+    }
+}
+
+function createHAR(address, title, startTime, resources)
+{
+    var entries = [];
+
+    resources.forEach(function (resource) {
+        var request = resource.request,
+            startReply = resource.startReply,
+            endReply = resource.endReply;
+
+        if (!request || !startReply || !endReply) {
+            return;
+        }
+
+        entries.push({
+            startedDateTime: request.time.toISOString(),
+            time: endReply.time - request.time,
+            request: {
+                method: request.method,
+                url: request.url,
+                httpVersion: "HTTP/1.1",
+                cookies: [],
+                headers: request.headers,
+                queryString: [],
+                headersSize: -1,
+                bodySize: -1
+            },
+            response: {
+                status: endReply.status,
+                statusText: endReply.statusText,
+                httpVersion: "HTTP/1.1",
+                cookies: [],
+                headers: endReply.headers,
+                redirectURL: "",
+                headersSize: -1,
+                bodySize: startReply.bodySize,
+                content: {
+                    size: startReply.bodySize,
+                    mimeType: endReply.contentType
+                }
+            },
+            cache: {},
+            timings: {
+                blocked: 0,
+                dns: -1,
+                connect: -1,
+                send: 0,
+                wait: startReply.time - request.time,
+                receive: endReply.time - startReply.time,
+                ssl: -1
+            },
+            pageref: address
+        });
+    });
+
+    return {
+        log: {
+            version: '1.2',
+            creator: {
+                name: "PhantomJS",
+                version: phantom.version.major + '.' + phantom.version.minor +
+                    '.' + phantom.version.patch
+            },
+            pages: [{
+                startedDateTime: startTime.toISOString(),
+                id: address,
+                title: title,
+                pageTimings: {
+                    onLoad: page.endTime - page.startTime
+                }
+            }],
+            entries: entries
+        }
+    };
+}
