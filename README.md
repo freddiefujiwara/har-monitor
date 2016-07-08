@@ -1,8 +1,6 @@
 har-monitor
 ===================
 
-```
-
 ## Deploying
 
 This can be deployed to heroku with the [phantomjs buildpack](https://github.com/stomita/heroku-buildpack-phantomjs).
