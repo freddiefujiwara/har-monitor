@@ -11,7 +11,7 @@ var service = server.listen(port, function(request, response) {
     render_har(url, function(har){
         response.statusCode = 200;
 //        response.write(JSON.stringify(har, undefined, 4));
-        response.write(JSON.stringify(request.get, undefined, 4));
+        response.write(JSON.stringify(request.url, undefined, 4));
         response.close();
     });
 });
