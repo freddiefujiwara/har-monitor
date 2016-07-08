@@ -48,14 +48,16 @@ function render_har(url, callback){
         var har;
         if (status !== 'success') {
             console.log('FAIL to load the address');
-            phantom.exit(1);
+          //  phantom.exit(1);
+          page.close();
         } else {
             page.endTime = new Date();
             page.title = page.evaluate(function () {
                 return document.title;
             });
             callback(createHAR(page.address, page.title, page.startTime, page.resources));
-            phantom.exit();
+          page.close();
+          //  phantom.exit();
         }
     });
 }
