@@ -6,7 +6,8 @@ var server = require('webserver').create(),
 
 var service = server.listen(port, function(request, response) {
 
-    var url = 'http://www.rakuten.co.jp/';
+//    var url = 'http://www.rakuten.co.jp/';
+    var url = 'http://review.rakuten.co.jp/item/1/247678_10001448/1.1/';
 
     render_har(url, function(har){
         response.statusCode = 200;
