@@ -9,16 +9,15 @@ var service = server.listen(port, function(request, response) {
     var url = 'http://review.rakuten.co.jp/item/1/247678_10001448/1.1/';
     var har = {'status':200};
 
-//    request_page(url, function(har){
+    request_page(url, function(har){
         response.statusCode = 200;
         response.write(JSON.stringify(har, undefined, 4));
         response.close();
-//    });
+    });
 });
 
 if(service) console.log("server started - http://localhost:" + server.port);
 
-/*
 function request_page(url, callback){
     page.address = url;
     page.resources = [];
@@ -147,4 +146,3 @@ function createHAR(address, title, startTime, resources)
         }
     };
 }
-*/
