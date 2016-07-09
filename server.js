@@ -1,13 +1,13 @@
 var server = require('webserver').create(),
     system = require('system'),
     fs     = require('fs'),
-    page   = require('webpage').create(),
+    page   = undefined,
     port   = system.env.PORT || 8080;
 
 var service = server.listen(port, function(request, response) {
 
-//    var url = 'http://www.rakuten.co.jp/';
-    var url = 'http://review.rakuten.co.jp/item/1/247678_10001448/1.1/';
+    var url = 'http://www.rakuten.co.jp/';
+    page   = require('webpage').create();
 
     render_har(url, function(har){
         response.statusCode = 200;
