@@ -8,11 +8,18 @@ var service = server.listen(port, function(request, response) {
 
     var url = 'http://www.rakuten.co.jp/';
     page   = require('webpage').create();
+    page.settings.userAgent = 'Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/41.0.2228.0 Safari/537.36';
     var pairs = {};
     if("GET" == request.method && 2 < request.url.length ){
         pairs = getQueryVariable(request.url.substring(2));
         if(typeof pairs.url !== "undefined" ){
             url = pairs.url;
+        }
+        if(typeof pairs.ua !== "undefined"){
+            page.settings.userAgent = 'Mozilla/5.0 (iPhone; CPU iPhone OS 8_0 like Mac OS X) AppleWebKit/600.1.4 (KHTML, like Gecko) Version/8.0 Mobile/12A365 Safari/600.1.4';
+            if("tb" === pairs.ua){
+                page.settings.userAgent = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_9_3) AppleWebKit/537.75.14 (KHTML, like Gecko) Version/7.0.3 Safari/7046A194A';
+            }
         }
     }
 
