@@ -29,6 +29,7 @@ var service = server.listen(port, function(request, response) {
 
     render_har(url, function(har){
         response.statusCode = 200;
+        response.setHeader('Content-Type', 'application/javascript; charset=utf-8');
         if(typeof callback !== "undefined" ){
             response.write(callback +"(");
         }
