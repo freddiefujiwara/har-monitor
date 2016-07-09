@@ -9,15 +9,16 @@ var service = server.listen(port, function(request, response) {
     var url = 'http://www.rakuten.co.jp/';
     page   = require('webpage').create();
     var pairs = {};
-//    if("GET" == request.method && 2 < request.url.length ){
-        pairs = getQueryVariable(request.url.substring(1));
-//    }
+    if("GET" == request.method && 2 < request.url.length ){
+        pairs = getQueryVariable(request.url.substring(2));
+        if(typeof pairs.url !== "undefined" ){
+            url = pairs.url;
+        }
+    }
 
     render_har(url, function(har){
         response.statusCode = 200;
-//        response.write(JSON.stringify(har, undefined, 4));
-        response.write(JSON.stringify(pairs, undefined, 4));
-        response.write(JSON.stringify(request, undefined, 4));
+        response.write(JSON.stringify(har, undefined, 4));
         response.close();
     });
 });
