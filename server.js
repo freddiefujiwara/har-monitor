@@ -7,11 +7,15 @@ var server = require('webserver').create(),
 var service = server.listen(port, function(request, response) {
 
     var url = 'http://www.rakuten.co.jp/';
+    var callback = undefined;
     page   = require('webpage').create();
     page.settings.userAgent = 'Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/41.0.2228.0 Safari/537.36';
     var pairs = {};
     if("GET" == request.method && 2 < request.url.length ){
         pairs = getQueryVariable(request.url.substring(2));
+        if(typeof pairs.callback !== "undefined" ){
+            callback = pairs.callback;
+        }
         if(typeof pairs.url !== "undefined" ){
             url = pairs.url;
         }
@@ -25,7 +29,13 @@ var service = server.listen(port, function(request, response) {
 
     render_har(url, function(har){
         response.statusCode = 200;
+        if(typeof callback !== "undefined" ){
+            response.write(callback +"(");
+        }
         response.write(JSON.stringify(har, undefined, 4));
+        if(typeof callback !== "undefined" ){
+            response.write(");");
+        }
         response.close();
     });
 });
