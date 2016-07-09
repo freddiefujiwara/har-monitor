@@ -1,23 +1,49 @@
 var server = require('webserver').create(),
     system = require('system'),
     fs     = require('fs'),
-    page   = require('webpage').create(),
+    page   = undefined,
     port   = system.env.PORT || 8080;
 
 var service = server.listen(port, function(request, response) {
 
-    var url = 'http://review.rakuten.co.jp/item/1/247678_10001448/1.1/';
+    var url = 'http://www.rakuten.co.jp/';
+    var callback = undefined;
+    page   = require('webpage').create();
+    page.settings.userAgent = 'Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/41.0.2228.0 Safari/537.36';
+    var pairs = {};
+    if("GET" == request.method && 2 < request.url.length ){
+        pairs = getQueryVariable(request.url.substring(2));
+        if(typeof pairs.callback !== "undefined" ){
+            callback = pairs.callback;
+        }
+        if(typeof pairs.url !== "undefined" ){
+            url = pairs.url;
+        }
+        if(typeof pairs.ua !== "undefined"){
+            page.settings.userAgent = 'Mozilla/5.0 (iPhone; CPU iPhone OS 5_0 like Mac OS X) AppleWebKit/534.46 (KHTML, like Gecko) Version/5.1 Mobile/9A334 Safari/7534.48.3';
+            if("tb" === pairs.ua){
+                page.settings.userAgent = 'Mozilla/5.0(iPad; U; CPU iPhone OS 3_2 like Mac OS X; en-us) AppleWebKit/531.21.10 (KHTML, like Gecko) Version/4.0.4 Mobile/7B314 Safari/531.21.10';
+            }
+        }
+    }
 
-    request_page(url, function(har){
+    render_har(url, function(har){
         response.statusCode = 200;
+        response.setHeader('Content-Type', 'application/javascript; charset=utf-8');
+        if(typeof callback !== "undefined" ){
+            response.write(callback +"(");
+        }
         response.write(JSON.stringify(har, undefined, 4));
+        if(typeof callback !== "undefined" ){
+            response.write(");");
+        }
         response.close();
     });
 });
 
 if(service) console.log("server started - http://localhost:" + server.port);
 
-function request_page(url, callback){
+function render_har(url, callback){
     page.address = url;
     page.resources = [];
 
@@ -46,14 +72,14 @@ function request_page(url, callback){
         var har;
         if (status !== 'success') {
             console.log('FAIL to load the address');
-            phantom.exit(1);
+            page.close();
         } else {
             page.endTime = new Date();
             page.title = page.evaluate(function () {
                 return document.title;
             });
             callback(createHAR(page.address, page.title, page.startTime, page.resources));
-            phantom.exit();
+            page.close();
         }
     });
 }
@@ -144,4 +170,14 @@ function createHAR(address, title, startTime, resources)
             entries: entries
         }
     };
+}
+
+function getQueryVariable(query) {
+    var vars = query.split('&');
+    var pairs = {};
+    for (var i = 0; i < vars.length; i++) {
+        var pair = vars[i].split('=');
+        pairs[pair[0]] = pair[1];
+    }     
+    return pairs;
 }
