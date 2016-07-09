@@ -8,11 +8,15 @@ var service = server.listen(port, function(request, response) {
 
     var url = 'http://www.rakuten.co.jp/';
     page   = require('webpage').create();
+    var pairs = {};
+    if("GET" == request.method && 2 < request.url.length ){
+        pairs = getQueryVariable(request.url.substring(1));
+    }
 
     render_har(url, function(har){
         response.statusCode = 200;
-        response.write(JSON.stringify(har, undefined, 4));
-//        response.write(JSON.stringify(request.url, undefined, 4));
+//        response.write(JSON.stringify(har, undefined, 4));
+        response.write(JSON.stringify(pairs, undefined, 4));
         response.close();
     });
 });
@@ -48,16 +52,14 @@ function render_har(url, callback){
         var har;
         if (status !== 'success') {
             console.log('FAIL to load the address');
-          //  phantom.exit(1);
-          page.close();
+            page.close();
         } else {
             page.endTime = new Date();
             page.title = page.evaluate(function () {
                 return document.title;
             });
             callback(createHAR(page.address, page.title, page.startTime, page.resources));
-          page.close();
-          //  phantom.exit();
+            page.close();
         }
     });
 }
@@ -148,4 +150,15 @@ function createHAR(address, title, startTime, resources)
             entries: entries
         }
     };
+}
+
+function getQueryVariable(url) {
+    var query = url;
+    var vars = query.split('&');
+    var pairs = {};
+    for (var i = 0; i < vars.length; i++) {
+        var pair = vars[i].split('=');
+        pairs[pair[0]] == pair[1];
+    }     
+    return pairs;
 }
