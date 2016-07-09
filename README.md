@@ -11,4 +11,7 @@ heroku create --stack cedar --buildpack http://github.com/stomita/heroku-buildpa
 
 # deploy
 git push heroku master
-```
+
+#if not working
+heroku ps:scale web=1
+heroku restart
