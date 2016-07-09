@@ -153,13 +153,12 @@ function createHAR(address, title, startTime, resources)
     };
 }
 
-function getQueryVariable(url) {
-    var query = url;
+function getQueryVariable(query) {
     var vars = query.split('&');
     var pairs = {};
     for (var i = 0; i < vars.length; i++) {
         var pair = vars[i].split('=');
-        pairs[pair[0]] == pair[1];
+        pairs[pair[0]] = pair[1];
     }     
     return pairs;
 }
