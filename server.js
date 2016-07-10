@@ -110,7 +110,7 @@ function createHAR(address, title, startTime, resources)
             return;
         }
 
-        if(type of endReply.statusText === "undefined" ){
+        if(typeof endReply.statusText === "undefined" ){
             endReply.statusText = "";
         }
 
