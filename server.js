@@ -68,6 +68,7 @@ function render_har(url, callback){
         }
     };
 
+    page.clearMemoryCache();
     page.open(page.address, function (status) {
         var har;
         if (status !== 'success') {
