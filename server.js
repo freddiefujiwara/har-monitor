@@ -110,6 +110,10 @@ function createHAR(address, title, startTime, resources)
             return;
         }
 
+        if(type of endReply.statusText === "undefined" ){
+            endReply.statusText = "";
+        }
+
         entries.push({
             startedDateTime: request.time.toISOString(),
             time: endReply.time - request.time,
