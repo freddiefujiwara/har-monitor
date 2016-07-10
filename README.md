@@ -1,8 +1,10 @@
 har-monitor
 ===================
 ## Demo
+[![Deploy](https://www.herokucdn.com/deploy/button.svg)](https://heroku.com/deploy)
 
 [Demo](https://har-monitor.herokuapp.com/?url=http://www.rakuten.co.jp&ua=sp).
+
 [Har Viewer](http://www.softwareishard.com/har/viewer/?inputUrl=https%3A%2F%2Fhar-monitor.herokuapp.com%2F%3Furl%3Dhttp%3A%2F%2Fwww.rakuten.co.jp%26ua%3Dsp).
 
 ## Deploying
