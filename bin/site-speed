@@ -1,0 +1,9 @@
+#!/usr/bin/env ruby
+require 'open-uri'
+require 'json'
+
+url = ARGV[0]
+ua = (ARGV[1] == 'SP') ? '&ua=sp' : ''
+json = open('http://har-monitor.herokuapp.com/?url=' + url + ua).read
+result = JSON.parse(json)
+puts result['log']['pages'][0]['pageTimings']['onLoad']
