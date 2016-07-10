@@ -1,0 +1,12 @@
+{
+    "name": "har-monitor",
+    "description": "HAR Monitor",
+    "repository": "https://github.com/freddiefujiwara/har-monitor.git",
+    "logo": "https://www.maketecheasier.com/assets/uploads/2010/11/YSLow-00-YSlow-Logo.jpg",
+    "keywords": ["HAR","YSlow"],
+    "buildpacks": [
+        {
+            "url": "https://github.com/stomita/heroku-buildpack-phantomjs"
+        }
+    ]
+}
