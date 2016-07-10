@@ -1,0 +1,13 @@
+#!/usr/bin/env ruby
+
+require 'json'
+
+
+exit if ARGV[0].nil?
+
+sites = {'data' => []}
+ARGV[0].split(',').each do |url|
+  sites['data'] << {'{#SITE_SPEED_URL}' => url}
+end
+
+puts sites.to_json
